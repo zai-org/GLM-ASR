@@ -40,6 +40,12 @@ Notes:
 * Wenet Meeting reflects real-world meeting scenarios with noise and overlapping speech.
 * Aishell-1 is a standard Mandarin benchmark.
 
+## Supported Languages
+
+GLM-ASR-Nano supports **17 languages** with high usability (WER ≤ 20%), specifically optimized for the following regions:
+
+![Supported Languages List](resources/languages.png)
+
 ## Download
 
 | Model             | Download Links                                                                                                                                             |
