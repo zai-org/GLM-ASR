@@ -38,14 +38,15 @@
 
 ## 模型下载
 
-| Model             | Download Links                                                                                                                                             |
-|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GLM-ASR-Nano-2512  | [🤗 Hugging Face](https://huggingface.co/zai-org/GLM-ASR-Nano-2512)<br>[🤖 ModelScope](https://modelscope.cn/models/ZhipuAI/GLM-ASR-Nano-2512)               |
+| Model             | Download Links                                                                                                                                 |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| GLM-ASR-Nano-2512 | [🤗 Hugging Face](https://huggingface.co/zai-org/GLM-ASR-Nano-2512)<br>[🤖 ModelScope](https://modelscope.cn/models/ZhipuAI/GLM-ASR-Nano-2512) |
+
++ 请注意，适配`transformers`和`SGLang`后，模型权重格式发生变化，如果你的模型下载于2025年12月27日之前，请重新拉取本版本最新模型。
 
 ## 推理
 
-`GLM-ASR-Nano-2512` 可通过 `transformers` 库轻松集成。  
-我们将支持 `transformers 5.x` 以及 `vLLM`、`SGLang` 等推理框架。
+我们提供了两段测试音频，分别是中文和英语版本。
 
 ### 环境依赖
 
@@ -55,6 +56,86 @@ sudo apt install ffmpeg
 ```
 
 ### 示例代码
+
++ transformers 5.0.0，需源代码安装，参考 requirements.txt
+
+```python
+from transformers import AutoModel, AutoProcessor
+import torch
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+repo_id = "zai-org/GLM-ASR-Nano-2512"
+
+processor = AutoProcessor.from_pretrained(repo_id)
+model = AutoModel.from_pretrained(repo_id, dtype=torch.bfloat16, device_map=device)
+
+messages = [
+    {
+        "role": "user",
+        "content": [
+            {
+                "type": "audio",
+                "url": "example_zh.wav",
+            },
+            {"type": "text", "text": "Please transcribe this audio into text"},
+        ],
+    }
+]
+
+inputs = processor.apply_chat_template(
+    messages, tokenize=True, add_generation_prompt=True, return_dict=True, return_tensors="pt"
+)
+inputs = inputs.to(device, dtype=torch.bfloat16)
+outputs = model.generate(**inputs, max_new_tokens=128, do_sample=False)
+print(processor.batch_decode(outputs[:, inputs.input_ids.shape[1]:], skip_special_tokens=True))
+```
+
++ SGLang
+
+目前，暂未提供发行版，请使用最新版本docker
+
+```shell
+docker pull lmsysorg/sglang:dev
+```
+
+进入docker，运行
+
+```shell
+pip install git+https://github.com/huggingface/transformers # 覆盖transformers版本
+python3 -m sglang.launch_server   --model-path /cloud/oss_checkpoints/zai-org/GLM-ASR-Nano-2512 --mem-fraction-static 0.8   --served-model-name glm-asr   --host 0.0.0.0   --port 8000
+```
+
+发起请求:
+
+```python
+from openai import OpenAI
+
+openai_api_key = "EMPTY"
+openai_api_base = "http://127.0.0.1:8000/v1"
+
+client = OpenAI(api_key=openai_api_key, base_url=openai_api_base)
+response = client.chat.completions.create(
+    model="glm-asr",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "audio_url",
+                    "audio_url": {"url": "example_zh.wav"}
+                },
+                {
+                    "type": "text",
+                    "text": "Please transcribe this audio into text"
+                },
+            ]
+        }
+    ],
+    max_tokens=1024,
+)
+print(response.choices[0].message.content.strip())
+```
++ transformers 4.51.3 (使用未更新之前的模型)
 
 ```shell
 python inference.py --checkpoint_dir zai-org/GLM-ASR-Nano-2512 --audio examples/example_en.wav # 英文
