@@ -8,6 +8,9 @@
 <p align="center">
     👋 加入我们的 <a href="resources/WECHAT.md" target="_blank">微信</a> 社区
 </p>
+<p align="center">
+    👋 加入智谱AI输入法的 <a href="https://discord.gg/PQWFxJRs" target="_blank">Discord</a> 频道和关注 <a href="https://x.com/Autotyper_Agent?s=20" target="_blank">X</a> 账号
+</p>
 
 ## 模型介绍
 

@@ -8,6 +8,9 @@
 <p align="center">
     👋 Join our <a href="resources/WECHAT.md" target="_blank">WeChat</a> community
 </p>
+<p align="center">
+    👋 Join our <a href="https://discord.gg/PQWFxJRs" target="_blank">Discord</a> channel for AutoGLM Autotyper and follow our <a href="https://x.com/Autotyper_Agent?s=20" target="_blank">X</a> account
+</p>
 
 ## Model Introduction
 
