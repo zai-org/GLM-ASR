@@ -28,7 +28,9 @@ WHISPER_FEAT_CFG = {
 
 def get_audio_token_length(seconds, merge_factor=2):
     def get_T_after_cnn(L_in, dilation=1):
-        for padding, kernel_size, stride in eval("[(1,3,1)] + [(1,3,2)] "):
+        # CNN layer configurations: (padding, kernel_size, stride)
+        layer_configs = [(1, 3, 1), (1, 3, 2)]
+        for padding, kernel_size, stride in layer_configs:
             L_out = L_in + 2 * padding - dilation * (kernel_size - 1) - 1
             L_out = 1 + L_out // stride
             L_in = L_out
@@ -56,6 +58,10 @@ def build_prompt(
     wav = wav[:1, :]
     if sr != feature_extractor.sampling_rate:
         wav = torchaudio.transforms.Resample(sr, feature_extractor.sampling_rate)(wav)
+
+    # Check if audio is empty
+    if wav.shape[1] == 0:
+        raise ValueError(f"Audio file is empty or has no samples: {audio_path}")
 
     tokens = []
     tokens += tokenizer.encode("<|user|>")
