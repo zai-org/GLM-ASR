@@ -6,7 +6,7 @@
 <img src=resources/logo.svg width="20%"/>
 </div>
 <p align="center">
-    👋 Join our <a href="resources/WECHAT.md" target="_blank">WeChat</a> community
+    👋 Join our<a href="resources/WECHAT.md" target="_blank"> Wechat</a> or <a href="https://discord.gg/C5bPxWq7" target="_blank">Discord</a> community.
 </p>
 <p align="center">
     👋 Follow AutoGLM Autotyper <a href="https://x.com/Autotyper_Agent?s=20" target="_blank">X</a> account
